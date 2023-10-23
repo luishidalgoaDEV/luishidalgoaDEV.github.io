@@ -15,5 +15,9 @@
         console.log(track, "Track fetched!");
     };
     fn();
+    const audio = new Audio(await audiusSdk.tracks.streamTrack({
+        trackId: "vG1ZYX6",
+    }));
+    audio.play();
 </script>
 </html>
