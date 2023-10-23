@@ -1,8 +1,10 @@
 <html>
+
 <head>
 </head>
+
 <body>
-<h1>Example content</h1>
+    <h1>Example content</h1>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@audius/sdk@latest/dist/sdk.min.js"></script>
@@ -11,14 +13,17 @@
         const audiusSdk = window.audiusSdk({
             apiKey: 'b93e4682ceb0196e408b128bfa8e4a927d65d23a',
         });
-        const track = await audiusSdk.tracks.getTrack({trackId: "vG1ZYX6"});
+        const track = await audiusSdk.tracks.getTrack({ trackId: "vG1ZYX6" });
         console.log(track, "Track fetched!");
+
+        console.log('check')
+        const url = await audiusSdk.tracks.streamTrack({
+            trackId: "vG1ZYX6",
+        });
+        const audio = new Audio(url);
+        audio.play();
     };
     fn();
-    const audio = new Audio(await audiusSdk.tracks.streamTrack({
-        trackId: "vG1ZYX6",
-    }));
-    audio.play();
-    console.log('holaa')
 </script>
+
 </html>
