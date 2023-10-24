@@ -36,26 +36,39 @@
         const url = await audiusSdk.tracks.streamTrack({
             trackId: id,
         });
-        return url 
+        return url
     }
 
     function main() {
-        let comprobar=0;
+        const body = document.body;
         searchTrack('8zJYQp9').then((result) => {
             track = result;
             console.log(result)
-            comprobar++;
-        });
-        playMusic('8zJYQp9').then((result) => {
-            url = result
-            console.log(result)
-            comprobar++;
+        }).then(() => {
+            playMusic('8zJYQp9').then((result) => {
+                url = result
+                console.log(result)
+            }).then(() => { //insertaremos la cancion en el html
+                const audio = new Audio(url);
+                // 1. Crea el elemento de audio.
+                const nuevoElementoAudio = document.createElement('audio');
+                nuevoElementoAudio.setAttribute('preload', 'auto');
+                nuevoElementoAudio.setAttribute('src', url);
+                nuevoElementoAudio.setAttribute('controls', ''); // Agrega el atributo "controls".
+
+                // 2. Obtén una referencia al cuerpo (body) del documento.
+
+                // 3. Inserta el elemento de audio al principio del cuerpo.
+                body.insertBefore(nuevoElementoAudio, body.firstChild);
+            })
+        }).then(() => { //Insertamos los datos de la cancion
+            body.innerHTML += `<ul><li><img src="${track.data.artwork._480x480}" alt="" srcset=""></li><li>Nombre: ${track.data.user.name}</li><li>Duracion: ${secondsToHMS(track.data.duration)}</li></ul>`;
         })
-        
+
 
         //TENEMOS EL PROBLEMA DE QUE CUANDO INTENTAMOS ACCEDER A TRACK O URL estos estan vacios si no usamos SetTimeout().
-        
-        setTimeout(() => {
+
+        /*setTimeout(() => {
             const audio = new Audio(url);
             // 1. Crea el elemento de audio.
             const nuevoElementoAudio = document.createElement('audio');
@@ -70,10 +83,9 @@
             body.insertBefore(nuevoElementoAudio, body.firstChild);
 
 
-            body.innerHTML+=`<ul><li><img src="${track.data.artwork._480x480}" alt="" srcset=""></li><li>Nombre: ${track.data.user.name}</li><li>Duracion: ${secondsToHMS(track.data.duration)}</li></ul>`;
-        },1000)
-        /*NOTA 2: Se me ha ocurrido que puedo crear un booleano que de alguna forma compruebe que todos los metodos asincronos hayan finalizado su
-        ejecucion*/
+            body.innerHTML += `<ul><li><img src="${track.data.artwork._480x480}" alt="" srcset=""></li><li>Nombre: ${track.data.user.name}</li><li>Duracion: ${secondsToHMS(track.data.duration)}</li></ul>`;
+        }, 1000)*/
+        /*NOTA 2: Se me ha ocurrido que puedo anidar un then detras de otro. para asi asegurarme de que los recursos mas importantes hayan finalizado*/
     }
     main();
 
