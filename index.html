@@ -10,6 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@audius/sdk@latest/dist/sdk.min.js"></script>
 <script>
 
+    let track;
+    let url;
+
 
     function fn() {
         return new Promise((resolve) => {
@@ -28,39 +31,73 @@
         return result;
     }
 
-    async function playMusic(id){
+    async function playMusic(id) {
         const audiusSdk = await fn()
         const url = await audiusSdk.tracks.streamTrack({
             trackId: id,
         });
-        console.log('URL',url)
-
-        //REPRODUCIR AUDIO
-        const audio = new Audio(url);
-        // 1. Crea el elemento de audio.
-        const nuevoElementoAudio = document.createElement('audio');
-        nuevoElementoAudio.setAttribute('preload', 'auto');
-        nuevoElementoAudio.setAttribute('src', url);
-        nuevoElementoAudio.setAttribute('controls', ''); // Agrega el atributo "controls".
-
-        // 2. Obtén una referencia al cuerpo (body) del documento.
-        const body = document.body;
-
-        // 3. Inserta el elemento de audio al principio del cuerpo.
-        body.insertBefore(nuevoElementoAudio, body.firstChild);
+        return url 
     }
 
-    function main(){
-        searchTrack('8zJYQp9').then((result)=>{
+    function main() {
+        let comprobar=0;
+        searchTrack('8zJYQp9').then((result) => {
+            track = result;
             console.log(result)
-            console.log(`<li>${result.trackId}</li>`)
-
+            comprobar++;
         });
-        playMusic('8zJYQp9').then((result)=>{
+        playMusic('8zJYQp9').then((result) => {
+            url = result
             console.log(result)
+            comprobar++;
         })
+        
+
+        //TENEMOS EL PROBLEMA DE QUE CUANDO INTENTAMOS ACCEDER A TRACK O URL estos estan vacios si no usamos SetTimeout().
+        
+        setTimeout(() => {
+            const audio = new Audio(url);
+            // 1. Crea el elemento de audio.
+            const nuevoElementoAudio = document.createElement('audio');
+            nuevoElementoAudio.setAttribute('preload', 'auto');
+            nuevoElementoAudio.setAttribute('src', url);
+            nuevoElementoAudio.setAttribute('controls', ''); // Agrega el atributo "controls".
+
+            // 2. Obtén una referencia al cuerpo (body) del documento.
+            const body = document.body;
+
+            // 3. Inserta el elemento de audio al principio del cuerpo.
+            body.insertBefore(nuevoElementoAudio, body.firstChild);
+
+
+            body.innerHTML+=`<ul><li><img src="${track.data.artwork._480x480}" alt="" srcset=""></li><li>Nombre: ${track.data.user.name}</li><li>Duracion: ${secondsToHMS(track.data.duration)}</li></ul>`;
+        },1000)
+        /*NOTA 2: Se me ha ocurrido que puedo crear un booleano que de alguna forma compruebe que todos los metodos asincronos hayan finalizado su
+        ejecucion*/
     }
     main();
+
+
+    /**
+     * ESTE metodo transformara el dato "duration" de segundos a ss:mm:hh
+     * @param seconds
+     * @returns {string}
+     */
+    function secondsToHMS(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = seconds % 60;
+
+        const hoursStr = hours.toString().padStart(2, '0');
+        const minutesStr = minutes.toString().padStart(2, '0');
+        const secondsStr = remainingSeconds.toString().padStart(2, '0');
+
+        return `${hoursStr}:${minutesStr}:${secondsStr}`;
+    }
+
+    const timeInHMS = secondsToHMS(seconds);
+    console.log(timeInHMS); // Esto mostrará "00:02:28"
+
 
 
     /*cuando se resuelva la promesa entonces se mostrara el resultado del metodo fn(). Esto
@@ -72,47 +109,6 @@
         console.error("Error al obtener datos:", error);
     })*/
 
-
-
-    /*
-
-async function searchTrack(id) {
-    doAsyncStuffWithPromises(1, 3)
-        .then(result = console.log(result))
-
-
-    const audiusSdk = await fn();
-    const result = await audiusSdk.tracks.getTrack({ trackId: id });
-    console.log(result, "Dentro del metodo!");
-}
-searchTrack("D7KyD");
-
-
-
-async function test() {
-    const audiusSdk = await fn();
-    const url = await audiusSdk.tracks.streamTrack({
-        trackId: "D7KyD",
-    });
-
-    //REPRODUCIR AUDIO
-    const audio = new Audio(url);
-    console.log(audio)
-    // 1. Crea el elemento de audio.
-    const nuevoElementoAudio = document.createElement('audio');
-    nuevoElementoAudio.setAttribute('preload', 'auto');
-    nuevoElementoAudio.setAttribute('src', 'https://discoveryprovider2.audius.co/v1/tracks/D7KyD/stream');
-    nuevoElementoAudio.setAttribute('controls', ''); // Agrega el atributo "controls".
-
-    // 2. Obtén una referencia al cuerpo (body) del documento.
-    const body = document.body;
-
-    // 3. Inserta el elemento de audio al principio del cuerpo.
-    body.insertBefore(nuevoElementoAudio, body.firstChild);
-
-}
-test();
-*/
 </script>
 
 </html>
